@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 from models.amenity import Amenity
 from models.review import Review
+from models.city import City
 from os import getenv
 
 storage_type = getenv("HBNB_TYPE_STORAGE")
@@ -29,8 +30,9 @@ place_amenity = Table(
 )
 
 
-class Place(BaseModel):
-    """ A place to stay """
+class Place(BaseModel, Base):
+    """A place to stay"""
+
     __tablename__ = "places"
     if storage_type == "db":
         city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
@@ -47,6 +49,7 @@ class Place(BaseModel):
                                  viewonly=False,
                                  back_populates="place_amenities")
         reviews = relationship('Review', cascade="all,delete", backref="place")
+
     else:
         city_id = ""
         user_id = ""
@@ -66,8 +69,8 @@ class Place(BaseModel):
             from models import storage
             amenitiesList = []
             amenitiesAll = storage.all(Amenity)
-            for am in amenitiesAll.values():
-                if am.id in self.amenity_ids:
+            for amenity in amenitiesAll.values():
+                if amenity.id in self.amenity_ids:
                     amenitiesList.append(amenity)
             return amenitiesList
 
@@ -75,12 +78,12 @@ class Place(BaseModel):
         def reviews(self):
             """Getter document"""
             from models import storage
-            revList = []
+            reviewsList = []
             reviewsAll = storage.all(Review)
-            for rev in reviewsAll.values():
-                if rev.place_id in self.id:
-                    revList.append(rev)
-            return revList
+            for review in reviewsAll.values():
+                if review.place_id in self.id:
+                    reviewsList.append(review)
+            return reviewsList
 
         @amenities.setter
         def amenities(self, amenity):
