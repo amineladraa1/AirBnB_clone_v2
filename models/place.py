@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from models.amenity import Amenity
 from models.review import Review
 from models.city import City
+from models.user import User
 from os import getenv
 
 storage_type = getenv("HBNB_TYPE_STORAGE")
